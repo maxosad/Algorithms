@@ -1,0 +1,109 @@
+#include<bits/stdc++.h>
+ 
+using namespace std ;
+ 
+long long  n , a[5000000];
+ 
+struct node
+{
+    long long  x,l,r ;
+    node * left ;
+    node * right ;
+    node ( long long  xx ,long long  ll , long long  rr )
+    {
+        x = xx ;
+        l = ll;
+        r = rr;
+        left = nullptr ;
+        right = nullptr ;
+    }
+ 
+};
+long long  get_x ( node * root )
+{
+    if ( root!= nullptr)
+    {
+        return root->x ;
+    }
+    return 0 ;
+}
+node * build ( long long  l , long long  r )
+{
+ 
+    if ( r < l )
+        return nullptr ;
+    if ( l == r )
+    {
+        node * res = new node ( a[l] , l , l) ;
+        return res ;
+    }
+ 
+    node * res1 = build ( l , (l+ r ) /2 ) ;
+    node * res2 = build ( (l+r)/2 + 1 , r ) ;
+ 
+    node * root = new node (get_x (res1) + get_x ( res2) , l , r );
+    root->left = res1 ;
+    root->right = res2 ;
+ 
+    return root ;
+}
+ 
+long long  sum ( node * root , long long  l , long long  r )
+{
+    if ( root == nullptr )
+        return 0 ;
+    if ( root-> r < l || r < root->l )
+    {
+        return 0;
+    }
+ 
+    if ( l <= root->l && root-> r<= r )
+        return get_x ( root) ;
+    return sum( root->left , l ,r) + sum ( root->right , l , r ) ;
+ 
+}
+ 
+void sett ( node * root , long long  el ,long long  val )
+{
+    if ( root == nullptr )
+        return ;
+    if ( root->r < el || el < root->l  )
+        return ;
+ 
+    if ( root->l == root->r && root->r == el )
+    {
+        root->x = val ;
+        return ;
+    }
+ 
+    sett (  root->left , el , val) ;
+    sett (  root->right , el ,val ) ;
+    root->x = get_x ( root->left) + get_x(root->right) ;
+ 
+}
+node * root ;
+string s ;
+long long  el ,val ;
+int  main()
+{
+    //freopen("input.txt","r",stdin) ;
+    cin >> n ;
+    for (long long  i =1 ;i<=n ; i++ )
+        cin >>a[i] ;
+ 
+    root = build ( 1 , n ) ;
+ 
+ 
+    while ( cin >> s )
+    {
+        cin >> el >>  val ;
+        if ( s == "sum")
+            cout << sum (root , el ,val ) << "\n" ;
+        else
+        {
+            sett ( root , el ,val) ;
+        }
+    }
+ 
+    return 0;
+}
