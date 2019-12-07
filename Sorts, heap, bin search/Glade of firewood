@@ -1,0 +1,71 @@
+#include<bits/stdc++.h>
+using namespace std ;
+double q,l,r ,a;
+double p ,f;
+double timeL , timeR , timeM1 , timeM2 ;
+ 
+struct Point
+{
+    double x ,y;
+    Point (double  valx , double valy )
+    {
+        x= valx;
+        y= valy ;
+    }
+};
+Point End = Point (1,0 );
+Point Start = Point (0,1 );
+Point Mid1 = Point (0 , 0 );
+Point Mid2 = Point (0 , 0 );
+ 
+double ras ( Point q ,Point w )
+{
+    return sqrt ( (q.x-w.x) * (q.x-w.x) + (q.y-w.y) * (q.y-w.y) ) ;
+}
+ 
+double gett ( Point P )
+{
+   return ras ( Start , P ) / p + ras(P ,End) /f;
+ 
+}
+ 
+ 
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    cin >> p >> f>> a;
+    l = 0;
+    r = 1;
+    Point Left = Point (0,a) ;
+    Point Right = Point ( 1,a) ;
+    timeL = gett ( Left) ;
+    timeR = gett ( Right) ;
+    Mid1.y = a;
+    Mid2.y = a;
+    //cout << timeL << " " << timeR ;
+ 
+    for (int i =0 ;i < 25 ; i ++ ) {
+ 
+        Mid1.x =Left.x +( Right.x -Left.x ) /3 ;
+        Mid2.x =Right.x -( Right.x -Left.x ) /3 ;
+       // cout << Mid.y << " " <<Left.y << " " << Right.y <<"\n";
+        timeM1 = gett( Mid1);
+        timeM2 = gett( Mid2);
+ 
+      //  cout << Mid1.x<< " " << Mid2.x << " " <<Left.x << " " << Right.x <<" "<< timeL  << " " << timeM1 << " " << timeM2 << " " << timeR<<    "\n";
+        if (timeM1 < timeM2 )
+        {
+            Right.x = Mid2.x ;
+            timeR = timeM2;
+        }else
+        {
+            //cout <<"asmfopeanf";
+            Left.x = Mid1.x ;
+            timeL = timeM1 ;
+        }
+ 
+    }
+    //cout << Left.x<< " " <<  Right.x<<"\n";
+    printf ( "%f" , (Left.x+ Right.x ) /2 );
+    return 0 ;
+}
