@@ -1,0 +1,193 @@
+#include<bits/stdc++.h>
+ 
+using namespace std ;
+ 
+int mod ,n , m;
+ 
+ 
+struct matr
+{
+    int x00,x10,x01,x11;
+    matr (int x1 ,int x2 ,int x3 ,int x4 )
+    {
+        x00 = x1;
+        x01 =x2;
+        x10 =x3 ;
+        x11 = x4 ;
+    }
+    matr ( matr * a , matr * b )
+    {
+        if ( a == nullptr && b == nullptr )
+        {
+            x00= 1;
+            x01= 0;
+            x10= 0;
+            x11= 1;
+        }
+        if ( a == nullptr )
+        {
+            swap ( a, b ) ;
+        }
+        if ( b == nullptr )
+        {
+            x00 = a->x00;
+            x01 = a->x01;
+            x10 = a->x10;
+            x11 = a->x11;
+ 
+        }
+        if ( a!= nullptr && b != nullptr )
+        {
+            x00= ( (a->x00* b->x00+ mod) % mod  + (a->x01 * b->x10+ mod)%mod + mod )  % mod  ;
+            x01= ( (a->x00* b->x01+ mod)%mod + (a->x01 * b->x11+ mod)%mod+ mod) % mod  ;
+            x10= ( (a->x10* b->x00+ mod)%mod +  (a->x11 * b->x10+ mod)%mod+ mod) % mod ;
+            x11= ( (a->x10* b->x01+ mod)%mod +  (a->x11 * b->x11+ mod)%mod+ mod) % mod  ;
+        }
+    }
+ 
+ 
+};
+matr * a[200004];
+ 
+matr * pr ( matr * a , matr * b )
+{
+    int x00 , x01 ,x10 ,x11;
+    if ( a == nullptr && b == nullptr )
+        {
+            x00= 1;
+            x01= 0;
+            x10= 0;
+            x11= 1;
+        }
+        if ( a == nullptr )
+        {
+            swap ( a, b ) ;
+        }
+        if ( b == nullptr )
+        {
+            x00 = a->x00%mod;
+            x01 = a->x01%mod;
+            x10 = a->x10%mod;
+            x11 = a->x11%mod;
+ 
+        }
+        if ( a!= nullptr && b != nullptr )
+        {
+            x00= ( (a->x00* b->x00+ mod) % mod  + (a->x01 * b->x10+ mod)%mod + mod )  % mod  ;
+            x01= ( (a->x00* b->x01+ mod)%mod + (a->x01 * b->x11+ mod)%mod+ mod) % mod  ;
+            x10= ( (a->x10* b->x00+ mod)%mod +  (a->x11 * b->x10+ mod)%mod+ mod) % mod ;
+            x11= ( (a->x10* b->x01+ mod)%mod +  (a->x11 * b->x11+ mod)%mod+ mod) % mod  ;
+        }
+        matr * ma = new matr ( x00, x01 ,x10 ,x11 ) ;
+        return ma ;
+}
+ 
+struct node
+{
+    matr * x;
+    int  l,r ;
+    node * left ;
+    node * right ;
+    node ( matr * xx ,int  ll , int  rr )
+    {
+        x = xx ;
+        l = ll;
+        r = rr;
+        left = nullptr ;
+        right = nullptr ;
+    }
+ 
+};
+ 
+void viv ( matr * ma )
+{
+    cout << ma ->x00 << " " << ma->x01 << "\n" << ma->x10 << " " << ma->x11 <<"\n\n";
+}
+ 
+matr * get_x( node * root )
+{
+    if ( root!= nullptr)
+    {
+        return root->x ;
+    }
+    return nullptr;
+}
+ 
+ 
+ 
+node * build ( int  l , int  r )
+{
+ 
+    if ( r < l )
+        return nullptr ;
+    if ( l == r )
+    {
+        node * res = new node (  a[l] , l , l) ;
+ 
+        return res ;
+    }
+ 
+    node * res1 = build ( l , (l+ r ) /2 ) ;
+    node * res2 = build ( (l+r)/2 + 1 , r ) ;
+ 
+    node * root = new node ( pr ( get_x(res1) , get_x ( res2 ) ), l , r );
+    /*
+    cout <<" root->l=" << root->l << " root->r=" << root->r <<"\n";
+    viv (pr ( get_x(res1) , get_x ( res2 ) ) ) ;
+    */
+    root->left = res1 ;
+    root->right = res2 ;
+    //cout << get_x( root) << " "<< root->l << " " << root->r << " " << get_lz( root ) <<"\n";
+    return root ;
+ 
+}
+ 
+node * root;
+ 
+matr * zap ( node * root , int ll ,int rr )
+{
+    if ( root== nullptr )
+        return nullptr;
+    if ( rr < root-> l || root->r < ll )
+        return nullptr ;
+ 
+    //cout << root->l << " " << root->r << "\n";
+    //viv ( get_x (root) ) ;
+    if (ll <= root->l && root-> r <= rr )
+    {
+        return get_x ( root ) ;
+    }
+ 
+ 
+    return pr ( zap (root->left , ll , rr ) , zap ( root->right , ll , rr )) ;
+ 
+}
+ 
+int q,w,e,t,ll, rr ;
+ 
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    freopen("crypto.in","r",stdin);
+    freopen("crypto.out","w",stdout);
+ 
+    ios_base::sync_with_stdio(0);
+    cin >>mod >> n >> m;
+    for (int i = 1 ;i<=n ; i ++ )
+    {
+        cin >> q >> w >> e >> t ;
+        matr * s = new matr ( q ,w, e ,t ) ;
+        a[i] = s ;
+    }
+    root = build ( 1 ,n ) ;
+ 
+    for ( int i = 0 ; i <m ; i ++ )
+    {
+        cin >>ll>> rr ;
+        viv ( zap (root ,  ll , rr ) ) ;
+ 
+    }
+ 
+    return 0;
+ 
+}
