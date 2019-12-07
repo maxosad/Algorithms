@@ -1,0 +1,60 @@
+#include<bits/stdc++.h>
+ 
+using namespace std;
+long long l1 ,l2 ,r2,r1 ;
+long long a1[ 1000];
+char a2 [1000];
+long long x ;
+long long toint ( string s )
+{
+    long long x=0 ;
+    for (int i = s.size() -1 ; i >= 0 ;i --)
+    {
+        x*=10 ;
+        x+=s[i]-'0' ;
+    }
+    return x ;
+}
+long long x1 ,x2;
+string s ;
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    ios_base::sync_with_stdio(false);
+ 
+    while (cin >> s)
+    {
+        if ( s[0]>= '0' && s[0] <='9' )
+        {
+            x = toint ( s ) ;
+            a1[r1++ ]= x ;
+        } else
+        {
+            a2[r2++] = s[0];
+            x2 = a1[--r1];
+            x1 = a1[--r1];
+ 
+ 
+            if (a2[r2-1] == '+' )
+            {
+                a1[r1++]= x1 + x2 ;
+            }
+            if (a2[r2-1] == '-' )
+            {
+                a1[r1++] = x1 -x2 ;
+            }
+            if (a2[r2-1] == '*' )
+            {
+                a1[r1++] = x1*x2;
+            }
+            r2 ++ ;
+        }
+    }
+    cout << a1[l1] ;
+ 
+ 
+ 
+ 
+ 
+    return 0 ;
+}
