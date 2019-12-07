@@ -1,0 +1,192 @@
+#include<bits/stdc++.h>
+ 
+using namespace std ;
+int n ,m ,a[100004];
+string s ;
+ 
+ 
+ 
+ 
+ 
+struct node
+{
+    long long  x,l,r,lz ;
+    node * left ;
+    node * right ;
+    node ( long long  xx ,long long  ll , long long  rr )
+    {
+        x = xx ;
+        l = ll;
+        r = rr;
+        left = nullptr ;
+        right = nullptr ;
+    }
+ 
+};
+long long  get_x ( node * root )
+{
+    if ( root!= nullptr)
+    {
+        return root->x ;
+    }
+    return 0 ;
+}
+ 
+ 
+long long get_lz ( node * root  )
+{
+    if ( root==nullptr )
+        return 1e9 ;
+    else
+        return root->lz ;
+}
+ 
+ 
+node * build ( long long  l , long long  r )
+{
+ 
+    if ( r < l )
+        return nullptr ;
+    if ( l == r )
+    {
+        node * res = new node ( a[l] , l , l) ;
+        res->lz = l;
+        return res ;
+    }
+ 
+    node * res1 = build ( l , (l+ r ) /2 ) ;
+    node * res2 = build ( (l+r)/2 + 1 , r ) ;
+ 
+    node * root = new node (get_x (res1) + get_x ( res2) , l , r );
+    root->lz = min ( get_lz ( res1)  , get_lz ( res2) ) ;
+    root->left = res1 ;
+    root->right = res2 ;
+    //cout << get_x( root) << " "<< root->l << " " << root->r << " " << get_lz( root ) <<"\n";
+    return root ;
+}
+ 
+void sett ( node * root , long long  el ,long long  val )
+{
+    //cout << "sett_start\n";
+    if ( root == nullptr )
+        return ;
+    if ( root->r < el || el < root->l  )
+        return ;
+ 
+    //cout <<"root->l="<< root->l <<" root->r="<<root->r << "\n";
+ 
+    if ( root->l == root->r && root->r == el )
+    {
+        root->x = val ;
+        if ( val == 1 )
+        {
+            root->lz = el;
+        }
+        else
+        {
+            root->lz = 1e9;
+        }
+ 
+            //cout <<"root->x=" <<  root->x<< " root->lz=" << root->lz<<"\n";
+ 
+    //    cout << "el="<<el << " val=" << val << " lz=" << get_lz ( root )<<"\n" ;
+        return ;
+    }
+    if ( root->left->l <= el)
+    {
+        sett (  root->left , el , val) ;
+        root->lz = min ( get_lz(root->left) , get_lz(root->right));
+    }
+ 
+    if ( root->right->r >= el )
+    {
+        sett (  root->right , el ,val ) ;
+        root->lz = min ( get_lz (root->left) , get_lz (root->right));
+    }
+ 
+ 
+ 
+}
+ 
+ 
+ 
+int left_zero  ( node * root , int l , int r )
+{
+    if ( r < l )
+        return 1e9 ;
+     if ( root == nullptr )
+        return 1e9 ;
+    if ( root-> r < l || r < root->l )
+    {
+        return 1e9;
+    }
+ 
+    if ( l <= root->l && root-> r<= r )
+    {
+        //cout <<"l="<< l << " r=" << r << " "<< root->l << " " << root->r << " "<< " " << root->lz<< " " << get_lz( root) << " ";
+        return get_lz ( root) ;
+    }
+    return min ( left_zero( root->left , l ,r), left_zero( root->right , l , r ) );
+}
+ 
+int p ;
+node * root ;
+int x ;
+int main()
+{
+    /*
+    freopen("input.txt" ,"r",stdin);
+    freopen("input.txt" ,"r",stdin);
+    */
+    freopen("parking.in" ,"r",stdin);
+    freopen("parking.out" ,"w",stdout);
+    cin >> n >> m ;
+    for ( int i = 1 ;i <=n ;i ++ )
+        a[i] = 1;
+    root =  build ( 1 , n );
+ 
+    for (int i = 0; i <m; i ++ )
+    {
+        cin >>s >> x ;
+        //cout << "x=" << x <<"\n";
+        if ( s == "enter")
+        {
+            if ( a[x] == 1 )
+            {
+                sett ( root, x , 0) ;
+                a[x] =0 ;
+                cout << x<<"\n";
+            }
+            else
+            {
+                p = left_zero ( root ,x + 1 , n ) ;
+                //cout << a[3] <<  "  felijioer  p=" << p << " beoub\n";
+                if ( p == 1e9 )
+                {
+                    p =left_zero (root , 1 , x-1 );
+ 
+                }
+                sett ( root , p , 0 ) ;
+                cout << p<<"\n" ;
+                if (p!=1e9 )
+                    a[p] = 0 ;
+            }
+ 
+        } else
+        {
+            sett ( root , x , 1 ) ;
+            a[x] =1 ;
+        }
+ 
+/*
+            for (int i =1 ; i<=n ;i ++ )
+            {
+                cout << a[i]<< " " ;
+            }
+            cout <<"\n";
+            */
+    }
+ 
+ 
+    return 0;
+}
