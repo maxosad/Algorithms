@@ -1,0 +1,31 @@
+#include<bits/stdc++.h>
+ 
+using namespace std ;
+double c, l, r, m, val1, val2 ;
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    cin >>c ;
+    //cout << c<<"\n";
+    r = int ( sqrt ( c) + 1)  ;
+    for (int i =0 ; i<20 ; i ++ ) {
+        m = (l + r) / 2;
+      //  cout << l << " " << r << " " << m << "\n" ;
+        val1 = m * m + sqrt(m);
+        val2 = abs (val1 - c);
+        if (val2  < 1e-6){
+            printf( "%0.10f",m);
+            return 0 ;
+        }
+        if (val1 > c ) {
+            r = m;
+        } else {
+            l = m;
+        }
+    }
+   printf( "%0.10f",m);
+ 
+ 
+ 
+    return 0 ;
+}
