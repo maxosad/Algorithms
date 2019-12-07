@@ -1,0 +1,62 @@
+#include<bits/stdc++.h>
+ 
+using namespace std;
+unsigned long long  n ,x , y , m ,z ,l,r ,sum  ;
+long long  t ;
+const unsigned long long  q = 1 << 16 ;
+const unsigned long long w = 1 << 30 ;
+unsigned long long  a, b, c1, c2, pref[10000006];
+int c[30000007];
+ 
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    cin >> n >> x >> y >> a>> m >> z >> t >> b;
+    pref[0] =0 ;
+    pref[1] =a ;
+    for (int i = 2 ; i<= n; i ++ )
+    {
+        a = (x*a + y + q) % q ;
+        pref[i] = pref[i-1] + a ;
+    }
+ 
+m *= 2 ;
+    for (int i = 1 ;i <=m ; i++ )
+    {
+        c1 =(b + n ) % n ;
+        b = (z*b +t + w )% w ;
+        if ( i % 2 ==1 )
+        {
+            l = c1;
+        }else
+        {
+            r= c1 ;
+            if ( r < l )
+                swap ( l , r );
+            sum += pref[r+1] - pref[l];
+        }
+    }
+ 
+ 
+/*
+    for ( int i = 1 ;i<=2 * m ; i++ )
+    {
+        c[i] = ( b + n ) % n ;
+        b = ( z * b + t + w ) % w ;
+    }
+ 
+    for (int i = 1; i <= 2 * m ; i +=2)
+    {
+        l = c[i] ;
+        r =c[i+1];
+        if ( l > r )
+            swap ( l , r ) ;
+       // cout << l << " " << r << " \n";
+        sum += pref[r+1] - pref[l];
+    }
+ 
+*/
+    cout << sum<<"\n";
+ 
+    return 0 ;
+}
