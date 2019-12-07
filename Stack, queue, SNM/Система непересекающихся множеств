@@ -1,0 +1,81 @@
+#include<bits/stdc++.h>
+ 
+using namespace std ;
+int x ,y ,n;
+pair < int ,pair <int,int> > a[300005] ;
+int size2[300005];
+int size1[300005];
+string s ;
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    ios_base::sync_with_stdio(false);
+ 
+    cin >> n ;
+ 
+    for (int i =1 ; i<=n ;i ++)
+    {
+        a[i] = { i , {i,i}};
+        size1[i] = 1 ;
+        size2[i] = 1;
+    }
+ 
+    while ( cin >> s )
+    {
+        if ( s == "union")
+        {
+            cin >>x >> y;
+            while ( x!=a[x].first)
+            {
+                x = a[x].first;
+            }
+ 
+            while ( y!=a[y].first)
+            {
+                y = a[y].first ;
+            }
+ 
+            if (x != y )
+            {
+                if ( size1[x]>= size1[y] )
+                {
+                    a[y].first = x;
+                    a[x].second.first = min ( a[x].second.first ,a[y].second.first) ;
+                    a[x].second.second = max ( a[x].second.second ,a[y].second.second) ;
+                    size2[x] += size2[y] ;
+                    if ( size1[x] == size1[y] )
+                    {
+                        size1[x] ++ ;
+                    }
+                }else
+                {
+                    swap ( x ,y ) ;
+                    a[y].first = x;
+                    a[x].second.first = min ( a[x].second.first ,a[y].second.first) ;
+                    a[x].second.second = max ( a[x].second.second ,a[y].second.second) ;
+                    size2[x] += size2[y] ;
+                }
+            }
+ 
+ 
+ 
+        }
+ 
+        if ( s == "get")
+        {
+            cin >> x ;
+            while ( x != a[x].first )
+            {
+                x =a[x].first;
+            }
+            cout << a[x].second.first << " " << a[x].second.second << " " <<size2[x] <<"\n";
+ 
+ 
+        }
+    }
+ 
+ 
+ 
+ 
+    return 0 ;
+}
