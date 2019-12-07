@@ -1,0 +1,51 @@
+#include<bits/stdc++.h>
+ 
+using namespace std;
+int x,kol,uk ;
+pair <int ,int > a[1000000] ;
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    ios_base::sync_with_stdio(false);
+    cin >>x ;
+    a[uk++] = { x ,1 } ;
+ 
+    while (cin >> x )
+    {
+        if ( a[uk].first == x )
+        {
+            a[uk].second++;
+ 
+        }else
+        {
+            while (a[uk].second >= 3)
+            {
+                kol += a[uk--].second;
+            }
+            if ( a[uk].first == x )
+            {
+                a[uk].second++;
+ 
+            } else
+            {
+                a[++uk] = {x,1};
+            }
+        }
+        /*
+        for (int i =0 ; i <= uk ; i ++ )
+        {
+            cout << a[i].first << " " << a[i].second <<"\n";
+        }
+        cout << "\n";
+        */
+    }
+    if ( a[uk].second >= 3 )
+    {
+        kol+= a[uk].second;
+    }
+    cout << kol;
+ 
+ 
+ 
+    return 0;
+}
