@@ -1,0 +1,54 @@
+#include<bits/stdc++.h>
+ 
+using namespace std;
+long long  n , x , y , l, r ,m ;
+ 
+ 
+ 
+bool p ( long long  t )
+{
+    int nn= n ;
+ 
+    t-=min ( x , y ) ;
+    if ( t < 0 )
+    {
+        return false ;
+    }
+    nn--;
+   // cout << nn << " " << x << " " << y << " " << t <<"\n";
+    if (  (t/x) + (t/y)>= nn    )
+        return true;
+ 
+ 
+    return false ;
+ 
+ 
+}
+ 
+int main()
+{
+    //freopen("input.txt","r",stdin);
+ 
+    cin >> n >> x>>y ;
+    l = 1 ;
+    r = 2*1e9+2;
+   // cout << p(1);
+ 
+    while (l < r )
+    {
+        m = ( l + r ) /2;
+        //cout << l << " " << r << " " << m << " " <<p(m)<<"\n";
+        if ( p(m) )
+        {
+            r= m;
+        }else
+        {
+            l= m + 1;
+        }
+    }
+    cout << r ;
+ 
+ 
+ 
+    return 0 ;
+}
