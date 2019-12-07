@@ -1,0 +1,44 @@
+#include<bits/stdc++.h>
+ 
+using namespace std ;
+ 
+long long w ,h , n , l , r ,m ;
+ 
+bool p ( long long  k )
+{
+    //cout << k << " " << k/w * k/h << "\n";
+    if ( (k/w) * (k/h) >=n )
+        return 1 ;
+ 
+    return false ;
+ 
+}
+ 
+ 
+ 
+ 
+int main ()
+{
+    //freopen("input.txt","r",stdin) ;
+    cin >> w >> h >> n ;
+    l= 1 ;
+    r = max ( w ,h  ) * n  ;
+    while (l < r  )
+    {
+        m = ( l + r ) /2 ;
+       // cout << l << " " <<r << " " << m << "\n";
+      if ( p( m ) )
+        {
+            r= m ;
+        } else {
+            l = m + 1 ;
+        }
+ 
+    }
+ 
+cout <<r ;
+ 
+ 
+    return 0;
+}
+ 
