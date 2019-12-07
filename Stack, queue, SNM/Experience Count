@@ -1,0 +1,78 @@
+#include<bits/stdc++.h>
+ 
+using namespace std;
+pair <int , int > a [200005];
+int size[200005];
+int n ,m,kol,x,y,k;
+string s ;
+int main()
+{
+    //freopen("input.txt","r",stdin);
+    ios_base::sync_with_stdio(false);
+    cin >>n >>m ;
+    for (int i= 1 ;i<=n; i ++ )
+    {
+        a[i] = {i,0};
+        size[i] = 1;
+    }
+    for (int i = 0 ; i <m ; i ++ )
+    {
+        cin >> s;
+        if ( s == "add")
+        {
+            cin >> x >> k ;
+            while ( a[x].first != x )
+            {
+                x = a[x].first;
+            }
+            a[x].second +=k ;
+        }
+ 
+        if ( s == "join")
+        {
+            cin >> x >> y ;
+            while ( a[x].first != x )
+            {
+                x = a[x].first;
+            }
+ 
+            while ( a[y].first != y )
+            {
+                y = a[y].first;
+            }
+ 
+ 
+            if (x!= y )
+            if ( size[x] >= size[y] )
+            {
+                a[y].second -= a[x].second;
+                a[y].first =x ;
+                if ( size[x] == size[y] )
+                    size[x] ++ ;
+            }else
+            {
+                a[x].second -= a[y].second;
+                a[x].first= y ;
+            }
+ 
+ 
+        }
+ 
+        if ( s == "get")
+        {
+            cin >> x ;
+            kol = 0 ;
+            while ( a[x].first != x )
+            {
+                kol += a[x].second;
+                x = a[x].first;
+            }
+            kol += a[x].second;
+            cout << kol<<"\n";
+        }
+    }
+ 
+ 
+ 
+    return 0 ;
+}
