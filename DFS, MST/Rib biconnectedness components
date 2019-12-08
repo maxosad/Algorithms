@@ -1,0 +1,112 @@
+#include<bits/stdc++.h>
+ 
+using namespace std;
+int n ,m , u ,v,c,timer ;
+vector <pair <int ,int >  > g [20004];
+bool used[20004] ;
+int color[20004] ;
+int tin[20004], fup[20004];
+ 
+void dfs1 ( int v ,int p )
+{
+    used[v] = true;
+    tin[v] = timer++ ;
+    fup[v] = tin[v] ;
+    for (int i =0; i < g[v].size(); i++)
+    {
+        int to = g[v][i].first;
+        if ( to == p ) continue;
+        if (used[to])
+        {
+            fup[v] = min (fup[v] , tin[to]) ;
+        } else
+        {
+            dfs1 ( to , v ) ;
+            fup[v] = min (fup[v] , fup[to]);
+        }
+    }
+ 
+}
+ 
+ 
+void dfs2 ( int v,int col  )
+{
+    color[v] = col ;
+    for (int i = 0; i < g[v].size(); i++)
+    {
+        int to = g[v][i].first;
+        if (color[to] == 0)
+        {
+            if ((fup[to] > tin[v] || fup[v] >tin[to]) && g[v][i].second == 1 )
+            {
+                c ++ ;
+                dfs2 ( to , c ) ;
+            } else
+            {
+                dfs2 ( to , col ) ;
+            }
+        }
+    }
+}
+bool f1, f2 ;
+ 
+int main()
+{
+    //freopen("input.txt","r",stdin) ;
+    cin >> n >> m;
+    for (int i =1 ;i <= m ; i++ )
+    {
+        cin >> u >> v ;
+        f1 = false;
+        f2 = false ;
+        for (int j = 0 ; j<g[u].size() ;j++ )
+            if (  g[u][j].first == v)
+            {
+                g[u][j].second++;
+                f1 = true;
+                break ;
+            }
+        if (!f1)
+            g[u].push_back({v,1});
+ 
+        for ( int j = 0 ; j< g[v].size() ; j ++ )
+            if ( g[v][j].first == u )
+            {
+                g[v][j].second++;
+                f2 = true ;
+                break;
+            }
+        if ( !f2)
+        g[v].push_back({u,1});
+    }
+    for (int i= 1; i<= n ;i ++ )
+    {
+        if (!used[i])
+        {
+            dfs1 ( i , -1 ) ;
+        }
+ 
+    }
+ 
+ 
+ 
+ 
+ 
+    for(int i = 1 ;i <=n ; i ++ )
+    {
+        if (color[i] == 0 )
+        {
+            c++;
+            dfs2 ( i, c) ;
+        }
+    }
+ 
+    cout << c <<"\n";
+    for (int i =1 ;i<=n ; i++ )
+    {
+        cout << color[i] << " " ;
+        }
+ 
+ 
+    return 0;
+}
