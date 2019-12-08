@@ -1,0 +1,209 @@
+#include<bits/stdc++.h>
+ 
+using namespace std ;
+ 
+long long n,m,l,r;
+ 
+struct node
+{
+    long long x , y, size;
+    char l;
+    long long used;
+ 
+    node * left;
+    node * right ;
+    node  (long long val, char let)
+    {
+        l = let;
+        x= val;
+        y = ( rand() << 15 ) + rand() ;
+        size = val;
+        used= (1 << (let - 'a')) ;
+        left = nullptr;
+        right = nullptr ;
+    }
+    ~node ()
+    {
+        if ( left)
+            delete[]left;
+        if (right)
+            delete [] right ;
+    }
+};
+ 
+ 
+long long get_x ( node * root )
+{
+    if ( root )
+        return root->x ;
+    else
+        return 0 ;
+}
+ 
+long long get_size(node * root)
+{
+    if ( root)
+        return root->size;
+    else return 0;
+}
+long long  get_used ( node * root )
+{
+    if (!root )
+    {
+        return 0;
+    }
+    return root->used;
+}
+ 
+void update ( node * root )
+{
+    if (!root)
+        return ;
+    root->size = get_x(root) + get_size(root->left) + get_size(root->right);
+ 
+    root->used = get_used ( root->left ) | get_used( root->right ) ;
+   // cout <<"\n"<<  get_used ( root->left ) << " " << get_used( root->right ) << " " << root->used <<"\n" ;
+    root->used = root->used | (1 << ( root->l - 'a')) ; // __builtin_popcount()
+    //cout <<"\n"<<  get_used ( root->left ) << " " << get_used( root->right ) << " " << root->used << " " << ( ) <<"\n" ;
+}
+ 
+ 
+ 
+ 
+ 
+node * merge ( node * root1 , node * root2 )
+{
+    if ( root1 == nullptr )
+        return root2 ;
+    if ( root2 == nullptr )
+        return root1 ;
+    if ( root1->y <= root2->y )
+    {
+        root1->right = merge ( root1->right , root2 );
+        update ( root1 );
+        return root1 ;
+    }else
+    {
+        root2->left = merge ( root1, root2->left);
+        update ( root2);
+        return root2 ;
+    }
+}
+ 
+ 
+ 
+pair <node* ,node*> split_index ( node* root , long long k )
+{
+    if ( !root)
+        return {nullptr ,nullptr};
+ 
+     if ( k<=get_size(root->left))
+    {
+        auto res = split_index(root->left , k) ;
+        root->left = res.second;
+        update ( root ) ;
+        return {res.first,root} ;
+    } else
+    {
+        k-=get_size(root->left) ;
+        if ( get_x( root ) == k )
+        {
+            auto res = root->right ;
+            root->right = nullptr ;
+            update(root) ;
+            return {root, res} ;
+        }
+        if ( get_x ( root ) > k)
+        {
+            node * newnode1 = new node (k, root->l) ;
+            node * newnode2 = new node (get_x(root)- k ,root->l) ;
+            /*
+            newnode1->left = root->left ; update ( newnode1 ) ;
+            newnode2->right = root->right ; update ( newnode2 ) ;
+            return { newnode1 , newnode2} ;
+*/
+            return{merge(root->left,newnode1) , merge(newnode2, root->right)};
+        }
+        if ( get_x(root) < k )
+        {
+            auto res = split_index( root->right,k - get_x (root ) ) ;
+            root->right = res.first;
+            update( root);
+            return {root,res.second};
+        }
+    }
+}
+ 
+ 
+ 
+void print (node * root  )
+{
+    if ( root== nullptr )
+        return ;
+    print ( root->left);
+  cout << get_x (root ) << " " << root-> l << " " << get_size( root ) << "\n" ;
+    print(root->right) ;
+}
+ 
+ 
+ 
+pair <node* , node*> a = {nullptr ,nullptr} ;
+pair <node* , node*> b = {nullptr ,nullptr} ;
+node * root;
+long long index,index1 ,index2, kol;
+char let;
+string c;
+ 
+ 
+ 
+int main()
+{
+ 
+   // freopen("input.txt","r",stdin) ;
+    cin >>n;
+ 
+    for (int i = 0 ; i <n ;i ++)
+    {
+        cin >> c ;
+        if (c == "+")
+        {
+            cin >> index >> kol >> let;
+            node * res = new node ( kol , let);
+            a = split_index(root , index-1 );
+ 
+            root = merge (merge(a.first, res), a.second);
+    //        print ( root ) ;
+        }
+ 
+        if ( c == "-")
+        {
+            cin >> index >>kol ;
+            a = split_index ( root , index-1 ) ;
+            b = split_index( a.second ,kol) ;
+ 
+            root = merge ( a.first , b.second);
+  //          print ( root ) ;
+        }
+        if ( c == "?")
+        {// c == '?"
+            cin >> index1 >> index2 ;
+ 
+            a = split_index ( root , index1-1 ) ;
+            b = split_index( a.second ,index2-index1+1) ;
+/*
+            print(a.first);
+            cout << "\n";
+            print(b.first);
+            cout << "\n";
+            print(b.second);
+*/
+            cout << __builtin_popcount(get_used(b.first))<<"\n" ;
+            root = merge ( a.first , merge ( b.first , b.second ) ) ;
+        }
+ 
+       // cout <<"erhgegre" << get_used(root) <<  " dfeufre " <<  __builtin_popcount(get_used(root))<<"\n" ;
+ 
+    }
+ 
+    return 0;
+}
