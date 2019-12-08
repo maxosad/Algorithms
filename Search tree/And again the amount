@@ -1,0 +1,176 @@
+#include<bits/stdc++.h>
+ 
+using namespace std ;
+ 
+struct node
+{
+    long long x , y, size, sum;
+    node * left;
+    node * right ;
+    node  (long long val )
+    {
+        sum =val;
+        x= val;
+        y = ( rand() << 15 ) + rand() ;
+        size = 1;
+        left = nullptr;
+        right = nullptr ;
+    }
+    ~node ()
+    {
+        if ( left)
+            delete[]left;
+        if (right)
+            delete [] right ;
+    }
+};
+ 
+long long get_x (node * root )
+{
+    if (root)
+        return root->x;
+    else
+        return 0;
+}
+long long get_size(node * root)
+{
+    if ( root)
+        return root->size;
+    return 0;
+}
+long long get_sum ( node * root)
+{
+    if ( root)
+        return root->sum;
+    return 0 ;
+}
+ 
+void update ( node * root )
+{
+    if (!root)
+        return ;
+    root->size= 1 + get_size(root->left) + get_size(root->right);
+    root->sum = get_x(root) + get_sum(root->left) + get_sum( root->right) ;
+}
+ 
+bool exists (node * root, long long key)
+{
+    if (!root)
+        return false ;
+    if (key == root->x)
+        return true;
+    if ( key>root->x )
+        return exists (root->right, key) ;
+    return exists ( root->left, key) ;
+}
+ 
+ 
+ 
+ 
+pair <node*, node*> split ( node* root, long long val )
+{
+    if ( root == nullptr)
+    {
+        return {nullptr, nullptr} ;
+    }
+    if ( get_x( root) <= val )
+    {
+        auto res = split( root->right, val) ;
+        root->right= res.first;
+        update ( root) ;
+        return {root, res.second} ;
+    } else
+    {
+        auto res = split( root->left, val) ;
+        root->left = res.second;
+        update(root);
+        return { res.first, root} ;
+    }
+}
+ 
+ 
+ 
+node * merge ( node * root1 , node * root2 )
+{
+    if ( root1 == nullptr )
+        return root2 ;
+    if ( root2 == nullptr )
+        return root1 ;
+    if ( root1->y <= root2->y )
+    {
+        root1->right = merge ( root1->right , root2 );
+        update ( root1 );
+        return root1 ;
+    }else
+    {
+        root2->left = merge ( root1, root2->left);
+        update ( root2);
+        return root2 ;
+    }
+}
+ 
+ 
+node* insert ( node * root , long long val )
+{
+    if (exists( root, val ) )
+        return root;
+    auto res = split(root , val ) ;
+    node * newnode = new node (val);
+    return merge ( merge(res.first,newnode),res.second) ;
+}
+ 
+ 
+void print(node * root  )
+{
+    if ( root== nullptr )
+        return ;
+    print ( root->left);
+   printf("%i ", root->x) ;
+    print(root->right) ;
+}
+ 
+pair <node* , node*> a = {nullptr ,nullptr} ;
+pair <node* , node*> b = {nullptr ,nullptr} ;
+node * root;
+string c;
+long long n,m,l,r,x;
+bool f =false ;
+long long pos ;
+const long long MOD = 1e9;
+ 
+ 
+int main()
+{
+   // freopen("input.txt","r",stdin) ;
+    cin >>n  ;
+ 
+    for (long long i = 0; i <n  ;i ++ )
+    {
+ 
+        cin >> c;
+        if ( c == "+")
+        {
+            cin >>x ;
+            if ( !f )
+                root =insert ( root , x) ;
+            else
+            {
+                root= insert ( root , (x + pos)%MOD) ;
+                f= false ;
+            }
+ 
+        } else
+        {
+            cin >> l >> r ;
+            a = split(root , l-1) ;
+            b = split( a.second, r) ;
+            f = true;
+            pos = get_sum(b.first);
+            cout << pos<<"\n" ;
+            root = merge (a.first, merge (b.first, b.second ));
+        }
+    }
+ 
+ 
+    return 0;
+}
