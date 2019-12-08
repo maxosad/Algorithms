@@ -1,0 +1,215 @@
+#include<bits/stdc++.h>
+ 
+using namespace std ;
+ 
+int n,m,l,r;
+ 
+struct node
+{
+    int x , y, size;
+    node * left;
+    node * right ;
+    node  (int val )
+    {
+        x= val;
+        y = ( rand() << 15 ) + rand() ;
+        size = 1;
+        left = nullptr;
+        right = nullptr ;
+    }
+    ~node ()
+    {
+        if ( left)
+            delete[]left;
+        if (right)
+            delete [] right ;
+    }
+};
+ 
+ 
+int get_x ( node * root )
+{
+    if ( root )
+    {
+        return root-> x ;
+    }else
+    return 0 ;
+}
+ 
+int get_size(node * root)
+{
+    if ( root)
+        return root->size;
+    else return 0;
+}
+ 
+void update ( node * root )
+{
+    if (!root)
+        return ;
+    root->size= 1 + get_size(root->left) + get_size(root->right);
+}
+ 
+pair <node*, node*> split ( node* root, int val )
+{
+    if ( root == nullptr)
+    {
+        return {nullptr, nullptr} ;
+    }
+    if ( get_x( root) > val )
+    {
+        auto res = split( root->right, val) ;
+        root->right= res.first;
+        update ( root ) ;
+        return {root, res.second} ;
+    } else
+    {
+        auto res = split( root->left, val) ;
+        root->left = res.second;
+        update ( root);
+        return { res.first, root} ;
+    }
+}
+ 
+int get_kth(node * root , int k )
+{
+    if ( ! root )
+    {
+        return 0 ;
+    }
+    if ( k <= get_size(root->left))
+        return get_kth (root->left,k ) ;
+    if ( k == get_size(root->left)+1)
+        return get_x ( root ) ;
+    return get_kth(root->right,k-get_size(root->left)-1) ;
+ 
+}
+ 
+ 
+node * merge ( node * root1 , node * root2 )
+{
+    if ( root1 == nullptr )
+        return root2 ;
+ 
+    if ( root2 == nullptr )
+        return root1 ;
+    if ( root1->y <= root2->y )
+    {
+        root1->right = merge ( root1->right , root2 );
+        update ( root1 );
+        return root1 ;
+    }else
+    {
+        root2->left = merge ( root1, root2->left);
+        update ( root2);
+        return root2 ;
+    }
+}
+ 
+bool exists (node * root, int key)
+{
+    if (!root)
+        return false ;
+    if (key == root->x)
+        return true;
+    if ( key>root->x )
+        return exists (root->left, key) ;
+    return exists ( root->right, key) ;
+}
+ 
+node * insert ( node * root ,int val )
+{
+    if ( exists(root , val))
+        return root;
+    auto res = split( root, val ) ;
+    node* newnode = new node ( val) ;
+    return merge ( merge(res.first,newnode),res.second) ;
+}
+ 
+node * erase ( node * root, int val )
+{
+    if (! exists(root , val))
+        return root ;
+    auto res1 = split( root ,val ) ;
+    auto res2 = split( res1.second, val -1 ) ;
+    return merge ( res1.first, res2.second ) ;
+}
+ 
+pair <node* , node*> split_kth ( node*root, int k )
+{
+    if ( !root)
+    return {nullptr ,nullptr};
+    if ( k<=get_size(root->left))
+    {
+        auto res = split_kth(root->left , k) ;
+        root->left = res.second;
+        update ( root ) ;
+        return {res.first,root} ;
+    } else
+    {
+        auto res = split_kth( root->right,k-1-get_size(root->left)) ;
+        root->right = res.first;
+        update( root);
+        return {root,res.second};
+    }
+}
+ 
+ 
+void print (node * root  )
+{
+    if ( root== nullptr )
+        return ;
+    print ( root->left);
+   printf("%i ", root->x) ;
+    print(root->right) ;
+}
+ 
+node * root;
+ 
+pair <node* , node*> a = {nullptr ,nullptr} ;
+pair <node* , node*> b = {nullptr ,nullptr} ;
+int x;
+string c;
+ 
+int main()
+{
+    //freopen("input.txt","r",stdin) ;
+    cin >>n ;
+    for (int i =0 ;i <n ; i ++ )
+    {
+        cin >> c >> x ;
+        if ( c == "1" || c == "+1" )
+        {
+            root = insert( root , x ) ;
+        } else
+        {
+            if ( c == "-1" )
+            {
+                root = erase ( root , x ) ;
+            }
+            else
+            {
+                /*
+                if ( get_size(root )  < x  )
+                {
+                    int q =34;
+                    for ( int i = 1 ;i<= 1e9 ; i ++ )
+                    {
+                        q = pow (q ,54 ) ;
+                    }
+                }
+                */
+                cout <<  get_kth ( root , x )<< "\n";
+                /*
+                a = split_kth(root , x) ;
+                b = split_kth ( a.first , x-1) ;
+                cout << get_x ( b.second)<<"\n" ;
+                root= merge ( merge ( b.first ,b.second ) , a.second ) ;<
+                */
+            }
+        }
+    }
+ 
+    return 0;
+}
+ 
