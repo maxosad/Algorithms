@@ -1,0 +1,48 @@
+#include<bits/stdc++.h>
+ 
+using namespace std ;
+set < int > tree, tree2 ;
+int x;
+string s;
+int main ()
+{
+    //freopen("input.txt","r",stdin);
+    while (cin >> s )
+    {
+        cin >>x ;
+        if ( s == "insert")
+        {
+            tree.insert(x);
+            tree2.insert(-x);
+        }
+        if ( s == "delete")
+        {
+            tree.erase(x);
+            tree2.erase(-x);
+        }
+        if ( s == "exists")
+            if ( tree.find(x) != tree.end())
+                cout << "true\n";
+            else
+                cout <<"false\n";
+        if ( s == "next")
+        {
+            auto p = tree.upper_bound(x);
+            if ( p == tree.end() )
+                cout << "none\n";
+            else
+                cout <<*p<<"\n";
+        }
+        if ( s == "prev")
+        {
+ 
+            auto p = tree2.upper_bound(-x);
+            if ( p == tree2.end())
+                 cout << "none\n";
+            else
+                cout <<-(*p)<<"\n";
+        }
+ 
+    }
+    return 0;
+}
