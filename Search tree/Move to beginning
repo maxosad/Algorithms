@@ -1,0 +1,131 @@
+#include<bits/stdc++.h>
+ 
+using namespace std ;
+ 
+int n,m,l,r;
+ 
+struct node
+{
+    int x , y, size;
+    node * left;
+    node * right ;
+    node  (int val )
+    {
+        x= val;
+        y = ( rand() << 15 ) + rand() ;
+        size = 1;
+        left = nullptr;
+        right = nullptr ;
+    }
+    ~node ()
+    {
+        if ( left)
+            delete[]left;
+        if (right)
+            delete [] right ;
+    }
+};
+ 
+ 
+int get_size(node * root)
+{
+    if ( root)
+        return root->size;
+    else return 0;
+}
+ 
+void update ( node * root )
+{
+    if (!root)
+        return ;
+    root->size= 1 + get_size(root->left) + get_size(root->right);
+ 
+ 
+}
+ 
+pair <node* , node*> split_kth ( node*root, int k )
+{
+    if ( !root)
+    return {nullptr ,nullptr};
+    if ( k<=get_size(root->left))
+    {
+        auto res = split_kth(root->left , k) ;
+        root->left = res.second;
+        update ( root ) ;
+        return {res.first,root} ;
+    } else
+    {
+        auto res = split_kth( root->right,k-1-get_size(root->left)) ;
+        root->right = res.first;
+        update( root);
+        return {root,res.second};
+    }
+}
+ 
+node * merge ( node * root1 , node * root2 )
+{
+    if ( root1 == nullptr )
+        return root2 ;
+    if ( root2 == nullptr )
+        return root1 ;
+    if ( root1->y <= root2->y )
+    {
+        root1->right = merge ( root1->right , root2 );
+        update ( root1 );
+        return root1 ;
+    }else
+    {
+        root2->left = merge ( root1, root2->left);
+        update ( root2);
+        return root2 ;
+    }
+}
+ 
+ 
+void print (node * root  )
+{
+    if ( root== nullptr )
+        return ;
+    print ( root->left);
+   printf("%i ", root->x) ;
+    print(root->right) ;
+}
+ 
+pair <node* , node*> a = {nullptr ,nullptr} ;
+pair <node* , node*> b = {nullptr ,nullptr} ;
+node * root;
+ 
+int main()
+{
+    //freopen("input.txt","r",stdin) ;
+    cin >>n  >> m ;
+ 
+    for (int i = 1; i <=n  ;i ++ )
+    {
+        node * res = new node ( i );
+        root = merge ( root , res) ;
+    }
+ 
+ 
+    for (int i =0 ; i < m ; i ++)
+    {
+        cin >> l >> r ;
+        a = split_kth(root , l-1) ;
+        b = split_kth( a.second, r-l+1) ;
+        root = merge ( merge ( b.first, a.first) , b.second ) ;
+    }
+ 
+ 
+print( root );
+ 
+/*
+a = split_kth(root, 5);
+print ( a.first );
+cout << "\n\n";
+print ( a.second);
+root = merge ( a.second , a.first) ;
+cout << "\n\n";
+print ( root);
+*/
+    return 0;
+}
